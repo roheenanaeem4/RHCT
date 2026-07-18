@@ -1,0 +1,30 @@
+name: Daily Morning Voice Call
+
+on:
+  schedule:
+    - cron: "45 3 * * *"   # 8:45 AM Pakistan Standard Time (UTC+5) — calls before FB post
+  workflow_dispatch:        # Manual trigger for testing
+
+jobs:
+  call:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install twilio
+
+      - name: Make morning call
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_PHONE_NUMBER: ${{ secrets.TWILIO_PHONE_NUMBER }}
+          RECIPIENT_PHONE_NUMBER: ${{ secrets.RECIPIENT_PHONE_NUMBER }}
+        run: python caller.py
